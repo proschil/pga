@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Repaso</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #f5f4f1;
+      --surface:    #ffffff;
+      --surface2:   #f0efe9;
+      --border:     #e0ddd5;
+      --border2:    #ccc9bf;
+      --text:       #1c1b18;
+      --muted:      #8a8780;
+      --light:      #b8b5ae;
+      --accent:     #2d5a3d;
+      --accent-lt:  #eaf2ed;
+      --danger:     #b5451b;
+      --danger-lt:  #fdf0eb;
+      --radius:     5px;
+      --tr:         200ms ease;
+    }
+
+    html, body {
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    header {
+      padding: 24px 40px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header-left { display: flex; align-items: baseline; gap: 14px; }
+    header h1 { font-size: 1.05rem; font-weight: 500; letter-spacing: 0.03em; }
+    header .subtitle { font-size: 0.75rem; color: var(--light); letter-spacing: 0.07em; text-transform: uppercase; }
+
+    .header-btn {
+      background: none; border: 1px solid var(--border); border-radius: var(--radius);
+      cursor: pointer; font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight: 400;
+      color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase;
+      padding: 5px 12px; transition: all var(--tr);
+    }
+    .header-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-lt); }
+
+    main { max-width: 760px; margin: 0 auto; padding: 36px 40px; }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    .section-label {
+      font-size: 0.7rem; font-weight: 500; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--light); margin-bottom: 16px;
+    }
+
+    /* ══ ESTUDIANTE ══ */
+    #topic-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .topic-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 14px;
+      transition: border-color var(--tr), box-shadow var(--tr);
+    }
+    .topic-card:hover { border-color: var(--accent); box-shadow: 0 2px 6px rgba(45,90,61,0.08); }
+    .topic-card-num { font-size: 0.72rem; color: var(--light); min-width: 52px; }
+    .topic-card-title { font-size: 0.93rem; font-weight: 400; flex: 1; }
+    .topic-card-arrow { color: var(--light); font-size: 0.85rem; transition: transform var(--tr); }
+    .topic-card:hover .topic-card-arrow { transform: translateX(3px); }
+
+    #back-btn {
+      background: none; border: none; cursor: pointer; color: var(--muted);
+      font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 0; margin-bottom: 32px; display: flex; align-items: center; gap: 6px;
+      transition: color var(--tr); font-family: 'Inter', sans-serif;
+    }
+    #back-btn:hover { color: var(--text); }
+
+    #study-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 28px; }
+    #study-num { font-size: 0.8rem; color: var(--light); padding-top: 2px; }
+    #study-title { font-size: 1.45rem; font-weight: 400; line-height: 1.2; }
+
+    .toggle-btn {
+      background: none; border: 1px solid var(--border); border-radius: var(--radius);
+      cursor: pointer; color: var(--muted); font-size: 0.7rem; letter-spacing: 0.07em;
+      text-transform: uppercase; padding: 5px 11px; font-family: 'Inter', sans-serif;
+      font-weight: 400; transition: all var(--tr); display: inline-flex; align-items: center;
+      gap: 5px; white-space: nowrap;
+    }
+    .toggle-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-lt); }
+    .toggle-btn.open:hover { border-color: var(--border2); color: var(--muted); background: var(--surface2); }
+    .toggle-btn .arr { font-size: 0.6rem; transition: transform var(--tr); display: inline-block; }
+    .toggle-btn.open .arr { transform: rotate(90deg); }
+
+    #epigrafe-reveal-wrap { margin-bottom: 24px; }
+    #epigrafe-list { display: flex; flex-direction: column; gap: 14px; animation: fadeIn 250ms ease; }
+
+    .epigrafe-block { border-left: 2px solid var(--border); padding-left: 18px; }
+    .epigrafe-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .epigrafe-num { font-size: 0.7rem; color: var(--light); min-width: 18px; }
+    .epigrafe-title { font-size: 0.93rem; font-weight: 500; flex: 1; }
+
+    .subepigrafe-list { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; animation: fadeIn 230ms ease; }
+    .subepigrafe-block { padding-left: 14px; border-left: 1px solid var(--border); }
+    .subepigrafe-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+    .subepigrafe-num { font-size: 0.7rem; color: var(--light); min-width: 28px; }
+    .subepigrafe-title { font-size: 0.87rem; font-style: italic; font-weight: 300; flex: 1; }
+
+    .ideas-list { margin-top: 6px; display: flex; flex-direction: column; gap: 4px; animation: fadeIn 210ms ease; }
+    .idea-item { font-size: 0.82rem; color: var(--muted); padding: 3px 0 3px 10px; border-left: 2px solid rgba(181,69,27,0.2); }
+
+    /* ══ LOGIN ══ */
+    #login-wrap { max-width: 320px; margin: 60px auto 0; text-align: center; }
+    #login-wrap p { font-size: 0.85rem; color: var(--muted); margin-bottom: 20px; }
+    .field-row { display: flex; gap: 8px; }
+
+    /* ══ INPUTS ══ */
+    input[type="password"], input[type="text"], input[type="number"], textarea {
+      font-family: 'Inter', sans-serif; font-size: 0.88rem; font-weight: 300;
+      color: var(--text); background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 7px 10px; width: 100%; outline: none;
+      transition: border-color var(--tr); line-height: 1.5;
+    }
+    input[type="number"] { width: 72px; text-align: center; }
+    input:focus, textarea:focus { border-color: var(--accent); }
+    textarea { resize: vertical; min-height: 54px; }
+
+    .inline-edit {
+      font-family: 'Inter', sans-serif; font-weight: 300; color: var(--text);
+      background: var(--surface); border: 1px solid var(--accent);
+      border-radius: var(--radius); padding: 3px 7px; outline: none;
+      font-size: inherit; width: 100%;
+    }
+
+    /* ══ BUTTONS ══ */
+    .btn-primary {
+      background: var(--accent); color: #fff; border: none; border-radius: var(--radius);
+      cursor: pointer; font-family: 'Inter', sans-serif; font-size: 0.82rem; font-weight: 400;
+      letter-spacing: 0.03em; padding: 8px 16px; transition: opacity var(--tr); white-space: nowrap;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+
+    .btn-icon {
+      background: none; border: none; cursor: pointer; font-family: 'Inter', sans-serif;
+      font-size: 0.78rem; color: var(--light); padding: 3px 5px; transition: color var(--tr); line-height: 1;
+    }
+    .btn-icon:hover { color: var(--text); }
+    .btn-icon.danger:hover { color: var(--danger); }
+
+    /* ══ EDITOR ══ */
+    #editor-wrap { display: flex; flex-direction: column; gap: 20px; }
+
+    .ed-topic-block {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+    }
+    .ed-topic-header {
+      display: flex; align-items: center; gap: 8px;
+      padding: 13px 16px; border-bottom: 1px solid var(--border);
+      background: var(--surface2);
+    }
+    .ed-topic-num-badge { font-size: 0.7rem; color: var(--light); min-width: 52px; flex-shrink: 0; }
+    .ed-topic-name { font-size: 0.93rem; font-weight: 500; flex: 1; cursor: pointer; }
+    .ed-topic-name:hover { color: var(--accent); }
+    .ed-topic-chevron { color: var(--light); font-size: 0.65rem; transition: transform var(--tr); cursor: pointer; }
+    .ed-topic-header.open .ed-topic-chevron { transform: rotate(90deg); }
+
+    .ed-topic-body { padding: 14px 16px; display: none; flex-direction: column; gap: 12px; }
+    .ed-topic-body.open { display: flex; }
+
+    .ed-ep-block { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .ed-ep-header {
+      display: flex; align-items: center; gap: 8px;
+      padding: 9px 12px; background: var(--surface2); border-bottom: 1px solid var(--border);
+    }
+    .ed-ep-num { font-size: 0.7rem; color: var(--light); min-width: 18px; flex-shrink: 0; }
+    .ed-ep-name { font-size: 0.87rem; font-weight: 400; flex: 1; cursor: pointer; }
+    .ed-ep-name:hover { color: var(--accent); }
+    .ed-ep-chevron { color: var(--light); font-size: 0.6rem; transition: transform var(--tr); cursor: pointer; }
+    .ed-ep-header.open .ed-ep-chevron { transform: rotate(90deg); }
+
+    .ed-ep-body { padding: 10px 12px; display: none; flex-direction: column; gap: 8px; }
+    .ed-ep-body.open { display: flex; }
+
+    .ed-sub-row {
+      display: flex; align-items: flex-start; gap: 6px;
+      padding: 7px 10px; background: var(--bg);
+      border-radius: var(--radius); border: 1px solid var(--border);
+    }
+    .ed-sub-num { font-size: 0.7rem; color: var(--light); min-width: 28px; padding-top: 2px; flex-shrink: 0; }
+    .ed-sub-content { flex: 1; min-width: 0; }
+    .ed-sub-title { font-size: 0.83rem; font-style: italic; color: var(--text); display: block; cursor: pointer; }
+    .ed-sub-title:hover { color: var(--accent); }
+    .ed-sub-ideas { font-size: 0.77rem; color: var(--muted); display: block; margin-top: 2px; cursor: pointer; }
+    .ed-sub-ideas:hover { color: var(--text); }
+
+    .row-actions { display: flex; align-items: center; flex-shrink: 0; }
+
+    .add-form { display: flex; gap: 8px; align-items: flex-start; padding-top: 4px; }
+    .add-form-sub { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+
+    #new-topic-form { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    #new-topic-form .num-label { font-size: 0.75rem; color: var(--muted); white-space: nowrap; }
+
+    .error-msg { font-size: 0.8rem; color: var(--danger); margin-top: 8px; }
+    .empty-note { font-size: 0.83rem; color: var(--light); font-style: italic; }
+
+    /* ══ LOADING ══ */
+    #loading-overlay {
+      position: fixed; inset: 0; background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 100; transition: opacity 400ms ease;
+    }
+    #loading-overlay.hidden { opacity: 0; pointer-events: none; }
+    .loading-text { font-size: 0.8rem; color: var(--light); letter-spacing: 0.08em; }
+
+    /* ══ TOAST ══ */
+    #toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: var(--text); color: #fff; font-size: 0.8rem; padding: 8px 18px;
+      border-radius: 20px; opacity: 0; transition: opacity 300ms ease;
+      pointer-events: none; z-index: 999;
+    }
+    #toast.show { opacity: 1; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      header { padding: 18px 20px 14px; }
+      main { padding: 24px 20px; }
+      #study-title { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="loading-overlay"><span class="loading-text">Cargando…</span></div>
+
+<header>
+  <div class="header-left">
+    <h1>Repaso</h1>
+    <span class="subtitle">Mapa de estudio</span>
+  </div>
+  <button class="header-btn" id="mode-btn">Modo editor</button>
+</header>
+
+<main>
+
+  <div id="screen-list" class="screen active">
+    <div class="section-label">Temas disponibles</div>
+    <div id="topic-list"></div>
+  </div>
+
+  <div id="screen-study" class="screen">
+    <button id="back-btn">← Todos los temas</button>
+    <div id="study-header">
+      <span id="study-num"></span>
+      <div id="study-title"></div>
+    </div>
+    <div id="epigrafe-reveal-wrap">
+      <button class="toggle-btn" id="btn-show-epigrafes">
+        <span class="arr">▶</span> Ver epígrafes
+      </button>
+    </div>
+    <div id="epigrafe-list" style="display:none;"></div>
+  </div>
+
+  <div id="screen-login" class="screen">
+    <div id="login-wrap">
+      <p>Acceso al modo editor</p>
+      <div class="field-row">
+        <input type="password" id="pwd-input" placeholder="Contraseña" />
+        <button class="btn-primary" id="pwd-btn">Entrar</button>
+      </div>
+      <div class="error-msg" id="pwd-error" style="display:none;">Contraseña incorrecta.</div>
+    </div>
+  </div>
+
+  <div id="screen-editor" class="screen">
+    <div class="section-label">Editor de temas</div>
+    <div id="editor-wrap">
+      <div id="ed-topic-list"></div>
+      <div>
+        <div class="section-label" style="margin-bottom:10px;">Añadir tema nuevo</div>
+        <div id="new-topic-form">
+          <span class="num-label">Nº de tema</span>
+          <input type="number" id="new-topic-num" min="1" placeholder="28" style="width:72px;" />
+          <input type="text" id="new-topic-input" placeholder="Título del tema" style="flex:1;min-width:180px;" />
+          <button class="btn-primary" id="new-topic-btn">Añadir</button>
+        </div>
+        <div class="error-msg" id="new-topic-error" style="display:none;"></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<div id="toast"></div>
+
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBRRl2g6hpYVxcgJTOlIywZA8GReR1WMR4",
+    authDomain: "repaso-estudio.firebaseapp.com",
+    projectId: "repaso-estudio",
+    storageBucket: "repaso-estudio.firebasestorage.app",
+    messagingSenderId: "961063594087",
+    appId: "1:961063594087:web:3af49f4d9d3b265a124cc2",
+    measurementId: "G-WR3X2ZNRN1"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db_fire = getFirestore(app);
+  const DOC_REF = doc(db_fire, 'repaso', 'data');
+
+  // ══════════════════════════════════════════════════
+  // STORAGE via Firestore
+  // ══════════════════════════════════════════════════
+  async function loadData() {
+    try {
+      const snap = await getDoc(DOC_REF);
+      return snap.exists() ? snap.data() : { topics: [] };
+    } catch (e) {
+      console.error('Error cargando datos:', e);
+      return { topics: [] };
+    }
+  }
+
+  async function saveData(data) {
+    try {
+      await setDoc(DOC_REF, data);
+    } catch (e) {
+      console.error('Error guardando:', e);
+      toast('Error al guardar. Comprueba la conexión.');
+    }
+  }
+
+  // ══════════════════════════════════════════════════
+  // STATE
+  // ══════════════════════════════════════════════════
+  let db = { topics: [] };
+  const PASSWORD = 'garbanzada98';
+  let editorMode = false;
+
+  // ══════════════════════════════════════════════════
+  // INIT
+  // ══════════════════════════════════════════════════
+  async function init() {
+    db = await loadData();
+    hideLoading();
+    renderStudentList();
+    showScreen('screen-list');
+  }
+
+  function hideLoading() {
+    const el = document.getElementById('loading-overlay');
+    el.classList.add('hidden');
+    setTimeout(() => el.remove(), 500);
+  }
+
+  // ══════════════════════════════════════════════════
+  // NAVIGATION
+  // ══════════════════════════════════════════════════
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  document.getElementById('mode-btn').addEventListener('click', () => {
+    if (editorMode) {
+      editorMode = false;
+      document.getElementById('mode-btn').textContent = 'Modo editor';
+      renderStudentList();
+      showScreen('screen-list');
+    } else {
+      showScreen('screen-login');
+      document.getElementById('pwd-input').value = '';
+      document.getElementById('pwd-error').style.display = 'none';
+      document.getElementById('pwd-input').focus();
+    }
+  });
+
+  document.getElementById('pwd-btn').addEventListener('click', tryLogin);
+  document.getElementById('pwd-input').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+
+  function tryLogin() {
+    if (document.getElementById('pwd-input').value === PASSWORD) {
+      editorMode = true;
+      document.getElementById('mode-btn').textContent = 'Modo estudio';
+      renderEditor();
+      showScreen('screen-editor');
+    } else {
+      document.getElementById('pwd-error').style.display = 'block';
+    }
+  }
+
+  document.getElementById('back-btn').addEventListener('click', () => {
+    renderStudentList();
+    showScreen('screen-list');
+  });
+
+  // ══════════════════════════════════════════════════
+  // MODO ESTUDIANTE
+  // ══════════════════════════════════════════════════
+  function sortedTopics() {
+    return [...db.topics].sort((a, b) => a.num - b.num);
+  }
+
+  function renderStudentList() {
+    const list = document.getElementById('topic-list');
+    list.innerHTML = '';
+    const topics = sortedTopics();
+    if (!topics.length) {
+      list.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;">Todavía no hay temas. Añádelos desde el modo editor.</p>';
+      return;
+    }
+    topics.forEach(topic => {
+      const card = document.createElement('div');
+      card.className = 'topic-card';
+      card.innerHTML = `
+        <span class="topic-card-num">Tema ${topic.num}</span>
+        <span class="topic-card-title">${esc(topic.titulo)}</span>
+        <span class="topic-card-arrow">→</span>`;
+      card.addEventListener('click', () => openTopic(topic.id));
+      list.appendChild(card);
+    });
+  }
+
+  function openTopic(id) {
+    const topic = db.topics.find(t => t.id === id);
+    if (!topic) return;
+    document.getElementById('study-num').textContent = `Tema ${topic.num}`;
+    document.getElementById('study-title').textContent = topic.titulo;
+    const epList = document.getElementById('epigrafe-list');
+    epList.style.display = 'none';
+    epList.innerHTML = '';
+    document.getElementById('epigrafe-reveal-wrap').style.display = 'block';
+    const btn = document.getElementById('btn-show-epigrafes');
+    btn.className = 'toggle-btn';
+    btn.innerHTML = '<span class="arr">▶</span> Ver epígrafes';
+    btn.onclick = () => toggleEpigrafes(topic, btn);
+    showScreen('screen-study');
+  }
+
+  function toggleEpigrafes(topic, btn) {
+    const list = document.getElementById('epigrafe-list');
+    const isOpen = list.style.display === 'flex';
+    if (isOpen) {
+      list.style.display = 'none';
+      btn.classList.remove('open');
+      btn.innerHTML = '<span class="arr">▶</span> Ver epígrafes';
+    } else {
+      if (!list.innerHTML) renderEpigrafes(topic.epigrafes, list);
+      list.style.display = 'flex';
+      btn.classList.add('open');
+      btn.innerHTML = '<span class="arr">▶</span> Ocultar epígrafes';
+    }
+  }
+
+  function renderEpigrafes(epigrafes, list) {
+    list.innerHTML = '';
+    epigrafes.forEach((ep, idx) => {
+      const epNum = idx + 1;
+      const block = document.createElement('div');
+      block.className = 'epigrafe-block';
+      const header = document.createElement('div');
+      header.className = 'epigrafe-header';
+      header.innerHTML = `<span class="epigrafe-num">${epNum}.</span><span class="epigrafe-title">${esc(ep.titulo)}</span>`;
+      const btn = document.createElement('button');
+      btn.className = 'toggle-btn';
+      btn.innerHTML = '<span class="arr">▶</span> Ver subepígrafes';
+      const subContainer = document.createElement('div');
+      btn.onclick = () => toggleSubs(ep.subepigrafes, epNum, subContainer, btn);
+      header.appendChild(btn);
+      block.appendChild(header);
+      block.appendChild(subContainer);
+      list.appendChild(block);
+    });
+  }
+
+  function toggleSubs(subs, epNum, container, btn) {
+    const existing = container.querySelector('.subepigrafe-list');
+    const isOpen = existing && existing.style.display !== 'none';
+    if (isOpen) {
+      existing.style.display = 'none';
+      btn.classList.remove('open');
+      btn.innerHTML = '<span class="arr">▶</span> Ver subepígrafes';
+    } else {
+      if (!existing) renderSubs(subs, epNum, container);
+      else existing.style.display = 'flex';
+      btn.classList.add('open');
+      btn.innerHTML = '<span class="arr">▶</span> Ocultar subepígrafes';
+    }
+  }
+
+  function renderSubs(subs, epNum, container) {
+    const list = document.createElement('div');
+    list.className = 'subepigrafe-list';
+    subs.forEach((sub, idx) => {
+      const subNum = `${epNum}.${idx + 1}`;
+      const block = document.createElement('div');
+      block.className = 'subepigrafe-block';
+      const header = document.createElement('div');
+      header.className = 'subepigrafe-header';
+      const numSpan = document.createElement('span');
+      numSpan.className = 'subepigrafe-num';
+      numSpan.textContent = subNum;
+      const title = document.createElement('span');
+      title.className = 'subepigrafe-title';
+      title.textContent = sub.titulo;
+      const btn = document.createElement('button');
+      btn.className = 'toggle-btn';
+      btn.innerHTML = '<span class="arr">▶</span> Ver ideas';
+      const ideasContainer = document.createElement('div');
+      btn.onclick = () => toggleIdeas(sub.ideas, ideasContainer, btn);
+      header.appendChild(numSpan);
+      header.appendChild(title);
+      header.appendChild(btn);
+      block.appendChild(header);
+      block.appendChild(ideasContainer);
+      list.appendChild(block);
+    });
+    container.appendChild(list);
+  }
+
+  function toggleIdeas(ideas, container, btn) {
+    const existing = container.querySelector('.ideas-list');
+    const isOpen = existing && existing.style.display !== 'none';
+    if (isOpen) {
+      existing.style.display = 'none';
+      btn.classList.remove('open');
+      btn.innerHTML = '<span class="arr">▶</span> Ver ideas';
+    } else {
+      if (!existing) renderIdeas(ideas, container);
+      else existing.style.display = 'flex';
+      btn.classList.add('open');
+      btn.innerHTML = '<span class="arr">▶</span> Ocultar ideas';
+    }
+  }
+
+  function renderIdeas(ideas, container) {
+    const list = document.createElement('div');
+    list.className = 'ideas-list';
+    ideas.forEach(idea => {
+      const item = document.createElement('div');
+      item.className = 'idea-item';
+      item.textContent = idea;
+      list.appendChild(item);
+    });
+    container.appendChild(list);
+  }
+
+  // ══════════════════════════════════════════════════
+  // MODO EDITOR
+  // ══════════════════════════════════════════════════
+  function renderEditor(openTopicId, openEpId) {
+    const wrap = document.getElementById('ed-topic-list');
+    wrap.innerHTML = '';
+    const topics = sortedTopics();
+    if (!topics.length) {
+      wrap.innerHTML = '<p class="empty-note">Aún no hay temas. Añade el primero abajo.</p>';
+    } else {
+      topics.forEach((topic, tIdx) => {
+        wrap.appendChild(buildEdTopicBlock(topic, tIdx, topics.length, openTopicId, openEpId));
+      });
+    }
+    document.getElementById('new-topic-error').style.display = 'none';
+    document.getElementById('new-topic-btn').onclick = addTopic;
+    document.getElementById('new-topic-input').onkeydown = e => { if (e.key === 'Enter') addTopic(); };
+  }
+
+  function buildEdTopicBlock(topic, tIdx, total, openTopicId, openEpId) {
+    const block = document.createElement('div');
+    block.className = 'ed-topic-block';
+    block.id = `ed-topic-${topic.id}`;
+
+    const header = document.createElement('div');
+    header.className = 'ed-topic-header';
+
+    const badge = document.createElement('span');
+    badge.className = 'ed-topic-num-badge';
+    badge.textContent = `Tema ${topic.num}`;
+
+    const nameEl = document.createElement('span');
+    nameEl.className = 'ed-topic-name';
+    nameEl.textContent = topic.titulo;
+    nameEl.title = 'Pulsa para editar';
+    nameEl.onclick = e => { e.stopPropagation(); startInlineEdit(nameEl, topic.titulo, async val => {
+      topic.titulo = val; await saveData(db); toast('Tema actualizado');
+    }); };
+
+    const chevron = document.createElement('span');
+    chevron.className = 'ed-topic-chevron';
+    chevron.textContent = '▶';
+
+    const actions = document.createElement('div');
+    actions.className = 'row-actions';
+
+    if (tIdx > 0) {
+      const up = mkIcon('↑', 'Subir', e => { e.stopPropagation(); moveTopic(topic.id, -1); });
+      actions.appendChild(up);
+    }
+    if (tIdx < total - 1) {
+      const dn = mkIcon('↓', 'Bajar', e => { e.stopPropagation(); moveTopic(topic.id, 1); });
+      actions.appendChild(dn);
+    }
+    const del = mkIcon('✕', 'Eliminar tema', e => { e.stopPropagation(); deleteTopic(topic.id); }, true);
+    actions.appendChild(del);
+
+    header.appendChild(badge);
+    header.appendChild(nameEl);
+    header.appendChild(chevron);
+    header.appendChild(actions);
+
+    const body = document.createElement('div');
+    body.className = 'ed-topic-body';
+
+    topic.epigrafes.forEach((ep, eIdx) => {
+      body.appendChild(buildEdEpBlock(topic.id, ep, eIdx, topic.epigrafes.length, openEpId));
+    });
+
+    const addEpForm = document.createElement('div');
+    addEpForm.className = 'add-form';
+    const epIn = document.createElement('input');
+    epIn.type = 'text'; epIn.placeholder = 'Nuevo epígrafe'; epIn.style.fontSize = '0.83rem';
+    const epBtn = document.createElement('button');
+    epBtn.className = 'btn-primary'; epBtn.style.cssText = 'font-size:0.78rem;padding:7px 14px;';
+    epBtn.textContent = 'Añadir';
+    epBtn.onclick = () => addEpigrafe(topic.id, epIn);
+    epIn.onkeydown = e => { if (e.key === 'Enter') addEpigrafe(topic.id, epIn); };
+    addEpForm.appendChild(epIn);
+    addEpForm.appendChild(epBtn);
+    body.appendChild(addEpForm);
+
+    const toggleBody = () => {
+      const isOpen = body.classList.contains('open');
+      body.classList.toggle('open', !isOpen);
+      header.classList.toggle('open', !isOpen);
+    };
+    header.addEventListener('click', toggleBody);
+
+    if (topic.id === openTopicId) {
+      body.classList.add('open');
+      header.classList.add('open');
+    }
+
+    block.appendChild(header);
+    block.appendChild(body);
+    return block;
+  }
+
+  function buildEdEpBlock(topicId, ep, eIdx, total, openEpId) {
+    const epNum = eIdx + 1;
+    const block = document.createElement('div');
+    block.className = 'ed-ep-block';
+    block.id = `ed-ep-${topicId}-${ep.id}`;
+
+    const header = document.createElement('div');
+    header.className = 'ed-ep-header';
+
+    const numEl = document.createElement('span');
+    numEl.className = 'ed-ep-num';
+    numEl.textContent = `${epNum}.`;
+
+    const nameEl = document.createElement('span');
+    nameEl.className = 'ed-ep-name';
+    nameEl.textContent = ep.titulo;
+    nameEl.title = 'Pulsa para editar';
+    nameEl.onclick = e => { e.stopPropagation(); startInlineEdit(nameEl, ep.titulo, async val => {
+      ep.titulo = val; await saveData(db); toast('Epígrafe actualizado');
+    }); };
+
+    const chevron = document.createElement('span');
+    chevron.className = 'ed-ep-chevron';
+    chevron.textContent = '▶';
+
+    const actions = document.createElement('div');
+    actions.className = 'row-actions';
+
+    if (eIdx > 0) {
+      const up = mkIcon('↑', 'Subir', e => { e.stopPropagation(); moveEpigrafe(topicId, ep.id, -1); });
+      actions.appendChild(up);
+    }
+    if (eIdx < total - 1) {
+      const dn = mkIcon('↓', 'Bajar', e => { e.stopPropagation(); moveEpigrafe(topicId, ep.id, 1); });
+      actions.appendChild(dn);
+    }
+    const del = mkIcon('✕', 'Eliminar', e => { e.stopPropagation(); deleteEpigrafe(topicId, ep.id); }, true);
+    actions.appendChild(del);
+
+    header.appendChild(numEl);
+    header.appendChild(nameEl);
+    header.appendChild(chevron);
+    header.appendChild(actions);
+
+    const body = document.createElement('div');
+    body.className = 'ed-ep-body';
+
+    ep.subepigrafes.forEach((sub, sIdx) => {
+      body.appendChild(buildEdSubRow(topicId, ep.id, sub, sIdx, ep.subepigrafes.length, epNum));
+    });
+
+    const addSubForm = document.createElement('div');
+    addSubForm.className = 'add-form';
+    const subFields = document.createElement('div');
+    subFields.className = 'add-form-sub';
+    const subTitleIn = document.createElement('input');
+    subTitleIn.type = 'text'; subTitleIn.placeholder = 'Título del subepígrafe'; subTitleIn.style.fontSize = '0.8rem';
+    const subIdeasIn = document.createElement('textarea');
+    subIdeasIn.placeholder = 'Ideas clave separadas por |'; subIdeasIn.style.fontSize = '0.77rem';
+    subFields.appendChild(subTitleIn);
+    subFields.appendChild(subIdeasIn);
+    const subBtn = document.createElement('button');
+    subBtn.className = 'btn-primary'; subBtn.style.cssText = 'font-size:0.75rem;padding:7px 12px;align-self:flex-end;';
+    subBtn.textContent = 'Añadir';
+    subBtn.onclick = () => addSubepigrafe(topicId, ep.id, subTitleIn, subIdeasIn);
+    addSubForm.appendChild(subFields);
+    addSubForm.appendChild(subBtn);
+    body.appendChild(addSubForm);
+
+    const toggleBody = () => {
+      const isOpen = body.classList.contains('open');
+      body.classList.toggle('open', !isOpen);
+      header.classList.toggle('open', !isOpen);
+    };
+    header.addEventListener('click', toggleBody);
+
+    if (ep.id === openEpId) {
+      body.classList.add('open');
+      header.classList.add('open');
+    }
+
+    block.appendChild(header);
+    block.appendChild(body);
+    return block;
+  }
+
+  function buildEdSubRow(topicId, epId, sub, sIdx, total, epNum) {
+    const subNum = `${epNum}.${sIdx + 1}`;
+    const row = document.createElement('div');
+    row.className = 'ed-sub-row';
+
+    const numEl = document.createElement('span');
+    numEl.className = 'ed-sub-num';
+    numEl.textContent = subNum;
+
+    const content = document.createElement('div');
+    content.className = 'ed-sub-content';
+
+    const titleEl = document.createElement('span');
+    titleEl.className = 'ed-sub-title';
+    titleEl.textContent = sub.titulo;
+    titleEl.title = 'Pulsa para editar';
+    titleEl.onclick = () => startInlineEdit(titleEl, sub.titulo, async val => {
+      sub.titulo = val; await saveData(db); toast('Subepígrafe actualizado');
+    });
+
+    const ideasEl = document.createElement('span');
+    ideasEl.className = 'ed-sub-ideas';
+    ideasEl.textContent = sub.ideas.length ? sub.ideas.join(' · ') : 'Sin ideas — pulsa para añadir';
+    ideasEl.title = 'Pulsa para editar ideas';
+    ideasEl.onclick = () => startInlineEdit(ideasEl, sub.ideas.join('|'), async val => {
+      sub.ideas = val.split('|').map(s => s.trim()).filter(Boolean);
+      await saveData(db);
+      ideasEl.textContent = sub.ideas.length ? sub.ideas.join(' · ') : 'Sin ideas — pulsa para añadir';
+      toast('Ideas actualizadas');
+    });
+
+    content.appendChild(titleEl);
+    content.appendChild(ideasEl);
+
+    const actions = document.createElement('div');
+    actions.className = 'row-actions';
+
+    if (sIdx > 0) {
+      actions.appendChild(mkIcon('↑', 'Subir', () => moveSubepigrafe(topicId, epId, sub.id, -1)));
+    }
+    if (sIdx < total - 1) {
+      actions.appendChild(mkIcon('↓', 'Bajar', () => moveSubepigrafe(topicId, epId, sub.id, 1)));
+    }
+    actions.appendChild(mkIcon('✕', 'Eliminar', () => deleteSubepigrafe(topicId, epId, sub.id), true));
+
+    row.appendChild(numEl);
+    row.appendChild(content);
+    row.appendChild(actions);
+    return row;
+  }
+
+  // ══════════════════════════════════════════════════
+  // INLINE EDIT
+  // ══════════════════════════════════════════════════
+  function startInlineEdit(el, currentVal, onSave) {
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'inline-edit';
+    input.value = currentVal;
+    input.style.fontSize = window.getComputedStyle(el).fontSize;
+
+    const finish = async () => {
+      const val = input.value.trim();
+      if (val && val !== currentVal) {
+        el.textContent = val;
+        await onSave(val);
+      } else {
+        el.textContent = currentVal;
+      }
+      if (input.parentNode) input.parentNode.replaceChild(el, input);
+    };
+
+    input.onblur = finish;
+    input.onkeydown = e => {
+      if (e.key === 'Enter') { e.preventDefault(); finish(); }
+      if (e.key === 'Escape') { el.textContent = currentVal; if (input.parentNode) input.parentNode.replaceChild(el, input); }
+    };
+
+    el.parentNode.replaceChild(input, el);
+    input.focus();
+    input.select();
+  }
+
+  // ══════════════════════════════════════════════════
+  // CRUD
+  // ══════════════════════════════════════════════════
+  function nextId(arr) {
+    return arr.length ? Math.max(...arr.map(x => x.id)) + 1 : 1;
+  }
+
+  async function addTopic() {
+    const numInput = document.getElementById('new-topic-num');
+    const titleInput = document.getElementById('new-topic-input');
+    const errEl = document.getElementById('new-topic-error');
+    const titulo = titleInput.value.trim();
+    const num = parseInt(numInput.value);
+    if (!titulo) { errEl.textContent = 'Escribe un título.'; errEl.style.display = 'block'; return; }
+    if (!num || num < 1) { errEl.textContent = 'Indica un número de tema válido.'; errEl.style.display = 'block'; return; }
+    if (db.topics.find(t => t.num === num)) { errEl.textContent = `El tema ${num} ya existe.`; errEl.style.display = 'block'; return; }
+    errEl.style.display = 'none';
+    const topic = { id: nextId(db.topics), num, titulo, epigrafes: [] };
+    db.topics.push(topic);
+    await saveData(db);
+    numInput.value = ''; titleInput.value = '';
+    renderEditor(topic.id);
+    toast('Tema añadido');
+  }
+
+  async function deleteTopic(id) {
+    if (!confirm('¿Eliminar este tema y todo su contenido?')) return;
+    db.topics = db.topics.filter(t => t.id !== id);
+    await saveData(db);
+    renderEditor();
+    toast('Tema eliminado');
+  }
+
+  async function moveTopic(id, dir) {
+    const sorted = sortedTopics();
+    const idx = sorted.findIndex(t => t.id === id);
+    const newIdx = idx + dir;
+    if (newIdx < 0 || newIdx >= sorted.length) return;
+    const tmp = sorted[idx].num;
+    sorted[idx].num = sorted[newIdx].num;
+    sorted[newIdx].num = tmp;
+    await saveData(db);
+    renderEditor(id);
+    toast('Orden actualizado');
+  }
+
+  async function addEpigrafe(topicId, input) {
+    const titulo = input.value.trim();
+    if (!titulo) return;
+    const topic = db.topics.find(t => t.id === topicId);
+    if (!topic) return;
+    const ep = { id: nextId(topic.epigrafes), titulo, subepigrafes: [] };
+    topic.epigrafes.push(ep);
+    await saveData(db);
+    input.value = '';
+    renderEditor(topicId, ep.id);
+    toast('Epígrafe añadido');
+  }
+
+  async function deleteEpigrafe(topicId, epId) {
+    if (!confirm('¿Eliminar este epígrafe y sus subepígrafes?')) return;
+    const topic = db.topics.find(t => t.id === topicId);
+    if (!topic) return;
+    topic.epigrafes = topic.epigrafes.filter(e => e.id !== epId);
+    await saveData(db);
+    renderEditor(topicId);
+    toast('Epígrafe eliminado');
+  }
+
+  async function moveEpigrafe(topicId, epId, dir) {
+    const topic = db.topics.find(t => t.id === topicId);
+    if (!topic) return;
+    const arr = topic.epigrafes;
+    const idx = arr.findIndex(e => e.id === epId);
+    const newIdx = idx + dir;
+    if (newIdx < 0 || newIdx >= arr.length) return;
+    [arr[idx], arr[newIdx]] = [arr[newIdx], arr[idx]];
+    await saveData(db);
+    renderEditor(topicId);
+    toast('Orden actualizado');
+  }
+
+  async function addSubepigrafe(topicId, epId, titleInput, ideasInput) {
+    const titulo = titleInput.value.trim();
+    if (!titulo) return;
+    const ideas = ideasInput.value.split('|').map(s => s.trim()).filter(Boolean);
+    const topic = db.topics.find(t => t.id === topicId);
+    const ep = topic?.epigrafes.find(e => e.id === epId);
+    if (!ep) return;
+    const sub = { id: nextId(ep.subepigrafes), titulo, ideas };
+    ep.subepigrafes.push(sub);
+    await saveData(db);
+    titleInput.value = ''; ideasInput.value = '';
+    renderEditor(topicId, epId);
+    toast('Subepígrafe añadido');
+  }
+
+  async function deleteSubepigrafe(topicId, epId, subId) {
+    if (!confirm('¿Eliminar este subepígrafe?')) return;
+    const topic = db.topics.find(t => t.id === topicId);
+    const ep = topic?.epigrafes.find(e => e.id === epId);
+    if (!ep) return;
+    ep.subepigrafes = ep.subepigrafes.filter(s => s.id !== subId);
+    await saveData(db);
+    renderEditor(topicId, epId);
+    toast('Subepígrafe eliminado');
+  }
+
+  async function moveSubepigrafe(topicId, epId, subId, dir) {
+    const topic = db.topics.find(t => t.id === topicId);
+    const ep = topic?.epigrafes.find(e => e.id === epId);
+    if (!ep) return;
+    const arr = ep.subepigrafes;
+    const idx = arr.findIndex(s => s.id === subId);
+    const newIdx = idx + dir;
+    if (newIdx < 0 || newIdx >= arr.length) return;
+    [arr[idx], arr[newIdx]] = [arr[newIdx], arr[idx]];
+    await saveData(db);
+    renderEditor(topicId, epId);
+    toast('Orden actualizado');
+  }
+
+  // ══════════════════════════════════════════════════
+  // UTILS
+  // ══════════════════════════════════════════════════
+  function mkIcon(text, title, onclick, danger = false) {
+    const btn = document.createElement('button');
+    btn.className = 'btn-icon' + (danger ? ' danger' : '');
+    btn.title = title; btn.textContent = text;
+    btn.onclick = onclick;
+    return btn;
+  }
+
+  function esc(str) {
+    return String(str)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  let toastTimer;
+  function toast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg; el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+  }
+
+  init();
+</script>
+</body>
+</html>
